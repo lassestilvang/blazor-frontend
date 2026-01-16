@@ -1,0 +1,30 @@
+
+@page "/events"
+@using EventManager.Client.Components
+@using EventManager.Client.Models
+@rendermode InteractiveAuto
+
+<PageTitle>Events</PageTitle>
+
+<h3>Upcoming Events</h3>
+
+<div class="row">
+    @foreach (var evt in EventsList)
+    {
+        <div class="col-md-6 col-lg-4">
+            <EventCard Event="evt" />
+        </div>
+    }
+</div>
+
+@code {
+    private List<EventItem> EventsList = new List<EventItem>();
+
+    protected override void OnInitialized()
+    {
+        // Mock Data
+        EventsList.Add(new EventItem { Title = "Blazor Workshop", Date = DateTime.Today.AddDays(2), Location = "Conference Room A", Description = "Learn the basics of Blazor." });
+        EventsList.Add(new EventItem { Title = "AI in Coding", Date = DateTime.Today.AddDays(5), Location = "Auditorium", Description = "How AI is changing development." });
+        EventsList.Add(new EventItem { Title = "Networking Night", Date = DateTime.Today.AddDays(10), Location = "Rooftop Lounge", Description = "Meet fellow developers." });
+    }
+}

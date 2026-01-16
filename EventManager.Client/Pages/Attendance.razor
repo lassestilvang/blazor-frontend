@@ -1,0 +1,83 @@
+
+@page "/attendance"
+@using EventManager.Client.Services
+@inject AttendanceService AttendanceService
+@implements IDisposable
+@rendermode InteractiveAuto
+
+<PageTitle>Attendance Tracker</PageTitle>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0">Attendance Tracker</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <strong>Current Session Status:</strong> @AttendanceService.GetCount() users checked in.
+            </div>
+
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Attendee Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Users)
+                    {
+                        <tr>
+                            <td class="align-middle">@user</td>
+                            <td class="align-middle">
+                                @if (AttendanceService.IsCheckedIn(user))
+                                {
+                                    <span class="badge bg-success">Checked In</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Absent</span>
+                                }
+                            </td>
+                            <td>
+                                <button class="btn btn-sm @(AttendanceService.IsCheckedIn(user) ? "btn-outline-danger" : "btn-outline-success")"
+                                        @onclick="() => ToggleAttendance(user)">
+                                    @(AttendanceService.IsCheckedIn(user) ? "Check Out" : "Check In")
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<string> Users = new List<string> { 
+        "Alice Johnson", "Bob Smith", "Charlie Brown", "Diana Prince", "Evan Wright" 
+    };
+
+    protected override void OnInitialized()
+    {
+        AttendanceService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AttendanceService.OnChange -= StateHasChanged;
+    }
+
+    private void ToggleAttendance(string user)
+    {
+        if (AttendanceService.IsCheckedIn(user))
+        {
+            AttendanceService.CheckOut(user);
+        }
+        else
+        {
+            AttendanceService.CheckIn(user);
+        }
+    }
+}
